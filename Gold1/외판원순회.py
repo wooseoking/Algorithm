@@ -1,6 +1,6 @@
-import sys
-sys.setrecursionlimit(10000000)
-input = sys.stdin.readline
-n = int(input())
-w = [list(map(int,input().split())) for _ in range(n)]
-print(w)
+while True:
+    a = list(input().strip())
+    if a[0]=="0":break
+    b = list(reversed(a))
+    if a==b:print("yes")
+    else : print("no")
