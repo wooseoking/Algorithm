@@ -27,3 +27,4 @@ def go(y,x,n):
 
 go(0,0,N)
 print(minus,zero,one)
+number = int("1325",base = 19)
