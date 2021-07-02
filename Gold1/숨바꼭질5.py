@@ -1,22 +1,27 @@
 from collections import deque
-start,dest= map(int,input().split())
+x,k = map(int,input().split())
+MAX = 500000
+dist = [[-1]*2 for _ in range(MAX+1)]
 q = deque()
-q.append((start,0))
-ans = -1
+dist[x][0] = 0
+q.append((x,0))
 
+#수빈이 거리 표기
 while q:
-    now,cnt = q.popleft()
-    if cnt>10:break
-    destination = dest
-    for i in range(1,cnt+1):
-        destination+=i
-
-    if now>500000 or now <0:continue
-
-    if now == destination:
-        ans = cnt
+    now,t = q.popleft()
+    for v in [now-1,now+1,now*2]:
+        if 0<=v<=MAX:
+            if dist[v][(t+1)%2]==-1:
+                dist[v][(t+1)%2] = dist[now][t%2]+1
+                q.append((v,t+1))
+#동생의 모험
+ans = -1
+t = 0
+while True:
+    k += t
+    if k > 500000:break
+    if dist[k][t%2] <= t:
+        ans = t
         break
-    q.append((now+1,cnt+1))
-    q.append((now-1,cnt+1))
-    q.append((now*2,cnt+1))
+    t += 1
 print(ans)
