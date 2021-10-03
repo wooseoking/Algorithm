@@ -1,37 +1,43 @@
-import sys
-sys.setrecursionlimit(1000000000)
 a = [list(map(int,input().split())) for _ in range(9)]
-grid = [[False]*10 for _ in range(10)]
-garo = [[False]*10 for _ in range(10)]
-sero = [[False]*10 for _ in range(10)]
-for i in range(9):
-    for j in range(9):
+CONST_N = 9
+garo = [[False]*10 for _ in range(9)]
+sero = [[False]*10 for _ in range(9)]
+section = [[False]*10 for _ in range(9)]
+
+for i in range(CONST_N):
+    for j in range(CONST_N):
         if a[i][j]!=0:
-            n = a[i][j]
-            garo[i][n] = True
-            sero[j][n] =True
-            grid[(i//3)*3 + j//3][n] = True
+            number = a[i][j]
+            garo[i][number] = True
+            sero[j][number] = True
+            section[(i//3)*3 + (j//3)][number] = True
+
 
 def go(z):
-    if z==9*9:
-        for row in a:
-            print(*row,sep=' ')
+    if z== 81:
+        #정답
+        for rows in a:
+            print(*rows,sep=' ')
+        exit(0)
         return
-    y = z//9
-    x = z % 9
 
-    if a[y][x]==0 :
+    y,x = z//9,z%9
+
+    if a[y][x]!=0:go(z+1)
+    else:
+        sec = (y//3)*3 + (x//3)
+
         for num in range(1,10):
-            if not grid[(y//3)*3 + x//3][num] and not garo[y][num] and not sero[x][num]:
-                a[y][x] = num
-                grid[(y//3)*3 + x//3][num] = True
+
+            if not garo[y][num] and not sero[x][num] and not section[sec][num]:
                 garo[y][num] = True
                 sero[x][num] = True
+                section[sec][num] = True
+                a[y][x] = num
                 go(z+1)
                 a[y][x] = 0
-                grid[(y // 3) * 3 + x // 3][num] = False
                 garo[y][num] = False
                 sero[x][num] = False
-    else : go(z+1)
+                section[sec][num] = False
 
 go(0)
