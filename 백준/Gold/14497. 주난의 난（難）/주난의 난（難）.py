@@ -1,3 +1,5 @@
+from collections import deque
+
 n,m = map(int,input().split())
 sy,sx,ey,ex = map(int,input().split())
 sy-=1
@@ -19,38 +21,29 @@ for i in range(n):
 def inside(y,x):
     return 0<=y < n and 0<=x < m
 
-def jump(y,x):
-    q = []
-    visited = [[False]*m for _ in range(n)]
-    q.append([y,x])
-    visited[y][x] = True
-
-    locations = []
-
-    while q:
-        y,x = q.pop(0)
-        locations.append([y,x])
+# (y,x) 에서 시작
+def bfs(y,x):
+    dq = deque()
+    countBoard = [[-1] * m for _ in range(n)]
+    countBoard[y][x] = 0
+    dq.append([y,x])
+    while dq:
+        y,x = dq.popleft()
+        cnt = countBoard[y][x]
 
         for k in range(4):
             ny,nx = y + dy[k] , x + dx[k]
             if not inside(ny,nx):continue
-            if visited[ny][nx]:continue
-            if board[ny][nx] == 0:
-                visited[ny][nx] = True
-                q.append([ny,nx])
+            if countBoard[ny][nx] != -1:continue
 
-    for y,x in locations:
-        for k in range(4):
-            ny,nx = y + dy[k],x + dx[k]
-            if not inside(ny,nx):continue
-            board[ny][nx] = 0
-            if ny == ey and nx == ex:return True
+            if board[ny][nx] == 1:
+                countBoard[ny][nx] = cnt + 1
+                dq.append([ny,nx])
+            elif board[ny][nx] == 0:
+                countBoard[ny][nx] = cnt
+                dq.appendleft([ny,nx])
 
-    return False
-
-ans = 0
-while True:
-    flag = jump(sy,sx)
-    ans+=1
-    if flag:break
+    ans = countBoard[ey][ex] + 1
+    return ans
+ans = bfs(sy,sx)
 print(ans)
