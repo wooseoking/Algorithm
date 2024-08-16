@@ -1,70 +1,76 @@
 import java.util.*;
 
 public class Main {
-    public static final int INF = Integer.MAX_VALUE >> 1;
-    public static class Edge{
-        int num;
-        int cost;
+    static int n,m;
+    static int start;
+    static Scanner sc = new Scanner(System.in);
+    static List<List<Point>> g = new ArrayList<>();
 
-        public Edge(int num,int cost){
-            this.num = num;
+    static class Point implements Comparable<Point>{
+        public int to;
+        public int cost;
+
+        public Point(int to, int cost){
+            this.to = to;
             this.cost = cost;
         }
-    }
-    public static int[] dijikstra(int n , int start,List<List<Edge>> graph){
-        int[] d = new int[n+1];
-        for(int i = 0 ;i<n+1;i++){
-            d[i] = INF;
+
+        @Override
+        public int compareTo(Point other){
+            return this.cost - other.cost;
         }
-        PriorityQueue<Edge> pq = new PriorityQueue<>(((o1, o2) -> Integer.compare(o1.cost,o2.cost)));
-        pq.add(new Edge(start,0));
+    }
+
+    public static int[] Dijikstra(int start){
+        int[] d = new int[n + 1];
+        for(int i = 0 ;i<n + 1;i++){
+            d[i] = Integer.MAX_VALUE;
+        }
         d[start] = 0;
+        Queue<Point> pq = new PriorityQueue<>();
+        pq.add(new Point(start,0));
+
         while(!pq.isEmpty()){
-            Edge cur = pq.poll();
-            int curNode = cur.num;
-            int curCost = cur.cost;
+            Point curPoint = pq.poll();
+            int cur = curPoint.to;
+            int cost = curPoint.cost;
 
-            if(d[curNode] < curCost)continue;
+            if(d[cur] < cost)continue;
 
+            for(Point nextPoint : g.get(cur)){
+                int nextCost = cost + nextPoint.cost;
+                int next = nextPoint.to;
 
-            for(Edge nextEdge : graph.get(curNode)){
-                int nextCost = curCost + nextEdge.cost;
-                int nextNode = nextEdge.num;
-                if(nextCost < d[nextNode]){
-                    d[nextNode] = nextCost;
-                    pq.add(new Edge(nextNode,nextCost));
+                if(nextCost < d[next]){
+                    d[next] = nextCost;
+                    pq.add(new Point(next,nextCost));
                 }
             }
         }
+
         return d;
     }
-
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int n,e;
         n = sc.nextInt();
-        e = sc.nextInt();
-        int start = sc.nextInt();
+        m = sc.nextInt();
+        start = sc.nextInt();
 
-        List<List<Edge>> graph = new ArrayList<>();
-        for(int i = 0 ;i<n+1;i++){
-            graph.add(new ArrayList<>());
+        for(int i = 0 ;i<n + 1;i++){
+            g.add(new ArrayList<>());
+        }
+        for(int i = 0 ;i<m;i++){
+            int x = sc.nextInt();
+            int y = sc.nextInt();
+            int c = sc.nextInt();
+
+            g.get(x).add(new Point(y,c));
         }
 
-        for(int i = 0 ;i<e;i++){
-            int u,v,c;
-            u = sc.nextInt();
-            v = sc.nextInt();
-            c = sc.nextInt();
+        int[] d = Dijikstra(start);
 
-            graph.get(u).add(new Edge(v,c));
-        }
-
-        int[] d = dijikstra(n,start,graph);
-        for(int i = 1 ; i < n+ 1 ;i++){
-            int cost = d[i];
-            if(cost == INF) System.out.println("INF");
-            else System.out.println(cost);
+        for(int i = 1;i<d.length;i++){
+            if(d[i] == Integer.MAX_VALUE) System.out.println("INF");
+            else System.out.println(d[i]);
         }
     }
 }
